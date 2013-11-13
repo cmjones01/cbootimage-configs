@@ -22,7 +22,7 @@ include ../../../build/pre.mk
 soc := t30
 
 bcts := \
-	TamontenNG_Nanya_1GB_NT5CC256M16CP-DI_750MHz_emmc.bct
+	TamontenNG_Nanya_1GB_NT5CC256M16CP-DI_667MHz_emmc.bct
 
 images := \
 	tegra30-tec-ng.img

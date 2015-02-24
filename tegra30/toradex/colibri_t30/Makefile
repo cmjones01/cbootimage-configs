@@ -1,5 +1,4 @@
-#!/bin/bash
-
+# Copyright (c) 2013, Toradex AG. All rights reserved.
 # Copyright (c) 2013, NVIDIA CORPORATION.  All rights reserved.
 #
 # This software is provided 'as-is', without any express or implied
@@ -18,25 +17,14 @@
 #    misrepresented as being the original software.
 # 3. This notice may not be removed or altered from any source distribution.
 
-deps_script=$0
-img_cfg_file=$1
-img_file=$2
-dep_file=$3
+include ../../../build/pre.mk
 
-rm -f ${dep_file}
-bct=`grep -i bctfile ${img_cfg_file} | sed -e 's/^.*=\s*//' -e s'/[,;].*$//'`
-bootloader=`grep -i bootloader ${img_cfg_file} | sed -e 's/^.*=\s*//' -e s'/[,;].*$//'`
+soc := t30
 
-cat > ${dep_file} <<ENDOFHERE
-${img_file}: \\
-	${deps_script} \\
-	${img_cfg_file} \\
-	${bct} \\
-	${bootloader}
+bcts := \
+	colibri_t30_12MHz_1GB_NT5CC256M16CP-DI_400MHz-shmoo.bct
 
-${img_cfg_file}:
+images := \
+	colibri_t30.img
 
-${bct}:
-
-${bootloader}:
-ENDOFHERE
+include ../../../build/post.mk

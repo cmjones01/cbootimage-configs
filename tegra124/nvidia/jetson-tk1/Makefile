@@ -1,6 +1,4 @@
-#!/bin/bash
-
-# Copyright (c) 2013, NVIDIA CORPORATION.  All rights reserved.
+# Copyright (c) 2013-2014, NVIDIA CORPORATION.  All rights reserved.
 #
 # This software is provided 'as-is', without any express or implied
 # warranty. In no event will the authors be held liable for any damages
@@ -18,25 +16,14 @@
 #    misrepresented as being the original software.
 # 3. This notice may not be removed or altered from any source distribution.
 
-deps_script=$0
-img_cfg_file=$1
-img_file=$2
-dep_file=$3
+include ../../../build/pre.mk
 
-rm -f ${dep_file}
-bct=`grep -i bctfile ${img_cfg_file} | sed -e 's/^.*=\s*//' -e s'/[,;].*$//'`
-bootloader=`grep -i bootloader ${img_cfg_file} | sed -e 's/^.*=\s*//' -e s'/[,;].*$//'`
+soc := t124
 
-cat > ${dep_file} <<ENDOFHERE
-${img_file}: \\
-	${deps_script} \\
-	${img_cfg_file} \\
-	${bct} \\
-	${bootloader}
+bcts := \
+	PM375_Hynix_2GB_H5TC4G63AFR_RDA_924MHz.bct
 
-${img_cfg_file}:
+images := \
+	jetson-tk1-emmc.img
 
-${bct}:
-
-${bootloader}:
-ENDOFHERE
+include ../../../build/post.mk

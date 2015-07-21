@@ -21,7 +21,7 @@ include ../../../build/pre.mk
 soc := t124
 
 bcts := \
-	meerkat_MT41K256M16HA-107E_528MHz.bct
+	meerkat_rev02.bct
 
 images := \
 	meerkat-emmc.img

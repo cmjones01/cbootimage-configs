@@ -29,3 +29,6 @@ image_deps := $(addprefix .,$(addsuffix .d,$(images)))
 %.img: %.img.cfg
 	../../../build/gen-image-deps.sh $< $@ .$@.d
 	cbootimage -$(soc) $< $@
+
+%.simg: %.img $(skb)
+	../../../build/sign.sh $(soc) $< $(skb) $@

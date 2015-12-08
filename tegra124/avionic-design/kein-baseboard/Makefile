@@ -26,4 +26,8 @@ bcts := \
 images := \
 	meerkat-emmc.img
 
+ifneq ($(wildcard $(skb)),)
+images += meerkat-emmc.simg
+endif
+
 include ../../../build/post.mk

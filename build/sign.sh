@@ -98,7 +98,7 @@ $OPENSSL dgst -sha256 -sigopt rsa_padding_mode:pss -sigopt rsa_pss_saltlen:-1 \
 
 echo "Create public key modulus from key file $KEY_FILE and save to $KEY_FILE.mod"
 $OPENSSL rsa -in $KEY_FILE -noout -modulus | $CUT -d= -f2 | \
-    $XXD -r -p -l 256 > $TMPDIR/$KEY_FILE.mod
+    $XXD -r -p -l 256 > $TMPDIR/$(basename $KEY_FILE).mod
 
 echo "Update bct's rsa signature and modulus"
 echo "RsaPssSigBctFile = $TMP_IMAGE.bct.sig;" > $CONFIG_FILE

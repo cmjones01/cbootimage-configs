@@ -55,8 +55,8 @@ fi
 
 [ -z "$TARGET_IMAGE" ] && TARGET_IMAGE=$IMAGE_FILE.signed
 
-CONFIG_FILE=$TMPDIR/$IMAGE_FILE.cfg
-TMP_IMAGE=$TMPDIR/$IMAGE_FILE
+CONFIG_FILE=$TMPDIR/$(basename $IMAGE_FILE).cfg
+TMP_IMAGE=$TMPDIR/$(basename $IMAGE_FILE)
 
 echo "Get BCT parameters"
 
@@ -73,18 +73,22 @@ BL_START_PAGE=$(bct_param "Bootloader\[0\]\.Start page")
 BL_LENGTH=$(bct_param "Bootloader\[0\]\.Length")
 BL_OFFSET=$((BLOCK_SIZE * BL_START_BLOCK + PAGE_SIZE * BL_START_PAGE))
 
-echo "Extract bootloader to $IMAGE_FILE.bl.tosig, offset $BL_OFFSET, length $BL_LENGTH"
-$DD bs=1 skip=$BL_OFFSET count=$BL_LENGTH \
-    if=$IMAGE_FILE of=$TMP_IMAGE.bl.tosig 2> /dev/null
+if [ "$BL_LENGTH" -gt 0 ] ; then
+	echo "Extract bootloader to $IMAGE_FILE.bl.tosig, offset $BL_OFFSET, length $BL_LENGTH"
+	$DD bs=1 skip=$BL_OFFSET count=$BL_LENGTH \
+	    if=$IMAGE_FILE of=$TMP_IMAGE.bl.tosig 2> /dev/null
 
-echo "Calculate rsa signature for bootloader and save to $IMAGE_FILE.bl.sig"
-$OPENSSL dgst -sha256 -sigopt rsa_padding_mode:pss -sigopt rsa_pss_saltlen:-1 \
-    -sign $KEY_FILE -out $TMP_IMAGE.bl.sig $TMP_IMAGE.bl.tosig
+	echo "Calculate rsa signature for bootloader and save to $IMAGE_FILE.bl.sig"
+	$OPENSSL dgst -sha256 -sigopt rsa_padding_mode:pss -sigopt rsa_pss_saltlen:-1 \
+	    -sign $KEY_FILE -out $TMP_IMAGE.bl.sig $TMP_IMAGE.bl.tosig
 
-echo "Update bootloader's rsa signature, aes hash and bct's aes hash"
-echo "RsaPssSigBlFile = $TMP_IMAGE.bl.sig;" > $CONFIG_FILE
-echo "RehashBl;" >> $CONFIG_FILE
-$CBOOTIMAGE -$SOC -u $CONFIG_FILE $IMAGE_FILE $TMP_IMAGE
+	echo "Update bootloader's rsa signature, aes hash and bct's aes hash"
+	echo "RsaPssSigBlFile = $TMP_IMAGE.bl.sig;" > $CONFIG_FILE
+	echo "RehashBl;" >> $CONFIG_FILE
+	$CBOOTIMAGE -$SOC -u $CONFIG_FILE $IMAGE_FILE $TMP_IMAGE
+else
+	TMP_IMAGE="$IMAGE_FILE"
+fi
 
 # Sign the BCT
 

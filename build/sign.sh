@@ -32,11 +32,11 @@ CUT=cut
 TMPDIR=
 
 cleanup() {
-    [ -n "$TMPDIR" ] && rm -rf "$TMPDIR"
+	[ -n "$TMPDIR" ] && rm -rf "$TMPDIR"
 }
 
 bct_param() {
-    $BCT_DUMP $IMAGE_FILE | grep -e "^\(# \)\?$1 *=" | sed 's,.*= *,,; s, *;$,,'
+	$BCT_DUMP $IMAGE_FILE | grep -e "^\(# \)\?$1 *=" | sed 's,.*= *,,; s, *;$,,'
 }
 
 trap cleanup EXIT TERM INT QUIT
@@ -49,8 +49,8 @@ KEY_FILE=$3
 TARGET_IMAGE=$4
 
 if [ -z "$SOC" -o ! -f "$IMAGE_FILE" -o ! -f "$KEY_FILE" ] ; then
-    echo "Usage: $0 SOC IMAGE KEY [OUTPUT]"
-    exit 1
+	echo "Usage: $0 SOC IMAGE KEY [OUTPUT]"
+	exit 1
 fi
 
 [ -z "$TARGET_IMAGE" ] && TARGET_IMAGE=$IMAGE_FILE.signed
@@ -75,11 +75,11 @@ BL_OFFSET=$((BLOCK_SIZE * BL_START_BLOCK + PAGE_SIZE * BL_START_PAGE))
 
 echo "Extract bootloader to $IMAGE_FILE.bl.tosig, offset $BL_OFFSET, length $BL_LENGTH"
 $DD bs=1 skip=$BL_OFFSET count=$BL_LENGTH \
-    if=$IMAGE_FILE of=$TMP_IMAGE.bl.tosig 2> /dev/null
+	if=$IMAGE_FILE of=$TMP_IMAGE.bl.tosig 2> /dev/null
 
 echo "Calculate rsa signature for bootloader and save to $IMAGE_FILE.bl.sig"
 $OPENSSL dgst -sha256 -sigopt rsa_padding_mode:pss -sigopt rsa_pss_saltlen:-1 \
-    -sign $KEY_FILE -out $TMP_IMAGE.bl.sig $TMP_IMAGE.bl.tosig
+	-sign $KEY_FILE -out $TMP_IMAGE.bl.sig $TMP_IMAGE.bl.tosig
 
 echo "Update bootloader's rsa signature, aes hash and bct's aes hash"
 echo "RsaPssSigBlFile = $TMP_IMAGE.bl.sig;" > $CONFIG_FILE
@@ -90,15 +90,15 @@ $CBOOTIMAGE -$SOC -u $CONFIG_FILE $IMAGE_FILE $TMP_IMAGE
 
 echo "Extract the part of bct which needs to be rsa signed"
 $DD bs=1 skip=$CRYPTO_OFFSET count=$CRYPTO_LENGTH \
-    if=$TMP_IMAGE of=$TMP_IMAGE.bct.tosig 2> /dev/null
+	if=$TMP_IMAGE of=$TMP_IMAGE.bct.tosig 2> /dev/null
 
 echo "Calculate rsa signature for BCT and save to $IMAGE_FILE.bct.sig"
 $OPENSSL dgst -sha256 -sigopt rsa_padding_mode:pss -sigopt rsa_pss_saltlen:-1 \
-    -sign $KEY_FILE -out $TMP_IMAGE.bct.sig $TMP_IMAGE.bct.tosig
+	-sign $KEY_FILE -out $TMP_IMAGE.bct.sig $TMP_IMAGE.bct.tosig
 
 echo "Create public key modulus from key file $KEY_FILE and save to $KEY_FILE.mod"
 $OPENSSL rsa -in $KEY_FILE -noout -modulus | $CUT -d= -f2 | \
-    $XXD -r -p -l 256 > $TMPDIR/$(basename $KEY_FILE).mod
+	$XXD -r -p -l 256 > $TMPDIR/$(basename $KEY_FILE).mod
 
 echo "Update bct's rsa signature and modulus"
 echo "RsaPssSigBctFile = $TMP_IMAGE.bct.sig;" > $CONFIG_FILE

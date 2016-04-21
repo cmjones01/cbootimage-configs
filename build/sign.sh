@@ -102,5 +102,5 @@ $OPENSSL rsa -in $KEY_FILE -noout -modulus | $CUT -d= -f2 | \
 
 echo "Update bct's rsa signature and modulus"
 echo "RsaPssSigBctFile = $TMP_IMAGE.bct.sig;" > $CONFIG_FILE
-echo "RsaKeyModulusFile = $TMPDIR/$KEY_FILE.mod;" >> $CONFIG_FILE
+echo "RsaKeyModulusFile = $TMPDIR/$(basename $KEY_FILE).mod;" >> $CONFIG_FILE
 $CBOOTIMAGE -$SOC -u $CONFIG_FILE $TMP_IMAGE $TARGET_IMAGE

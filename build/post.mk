@@ -26,6 +26,9 @@ image_deps := $(addprefix .,$(addsuffix .d,$(images)))
 %.bct: %.bct.cfg
 	cbootimage -gbct -$(soc) $< $@
 
+%.bct.signed: %.bct
+	../../../build/sign.sh $(soc) $< $(skb)
+
 %.img: %.img.cfg
 	../../../build/gen-image-deps.sh $< $@ .$@.d
 	cbootimage -$(soc) $< $@

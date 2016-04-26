@@ -27,7 +27,7 @@ images := \
 	meerkat-emmc.img
 
 ifneq ($(wildcard $(skb)),)
-images += meerkat-emmc.simg
+images += meerkat-emmc.simg meerkat_rev02.bct.signed
 endif
 
 include ../../../build/post.mk
